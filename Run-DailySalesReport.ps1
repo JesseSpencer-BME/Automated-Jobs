@@ -13,11 +13,8 @@ $AccessMacro    = "_mcrSALESONLY"
 $ExcelTemplate  = "C:\Users\JesseSpencer\BenefitsMe, LLC\BenefitsMe - Business Intelligence\KPIs\Sales Reporting\Daily Sales Pivot Reporting\Sales Pivot (Template).xlsx"
 $ExcelOutputDir = Split-Path $ExcelTemplate -Parent
 
-#$EmailTo        = "RaechelPeters@BenefitsMe.com; steve.spencer@rfoholdings.com; AndyEdinborough@BenefitsMe.com; dougrippel@rfoholdings.com; AbbyAdams@BenefitsMe.com; DavidCarlock@BenefitsMe.com"
-#$EmailToCC      = "kama.crockett@rfoholdings.com; jessespencer@benefitsme.com"
-
-$EmailTo        = "jessespencer@benefitsme.com"
-
+$EmailTo        = "RaechelPeters@BenefitsMe.com; steve.spencer@rfoholdings.com; AndyEdinborough@BenefitsMe.com; dougrippel@rfoholdings.com; AbbyAdams@BenefitsMe.com; DavidCarlock@BenefitsMe.com"
+$EmailToCC      = "kama.crockett@rfoholdings.com; jessespencer@benefitsme.com"
 
 # --- Derived values ----------------------------------------------------------
 $DateStamp      = Get-Date -Format "yyyy-MM-dd"
@@ -126,7 +123,7 @@ try {
     }
 
     # Read yesterday's sales from named range before closing
-    $yesterdaySales = $workbook.Names.Item("dataSalesYesterday").RefersToRange.Value
+    $yesterdaySales = [double]$workbook.Names.Item("dataSalesYesterday").RefersToRange.Value2
     Write-Log "Yesterday's sales: $yesterdaySales"
 
     # 51 = xlOpenXMLWorkbook (.xlsx)
@@ -173,9 +170,11 @@ try {
     }
 
     # Format yesterday's sales as currency, with fallback if value wasn't retrieved
-    if ($null -ne $yesterdaySales) {
-        $salesFormatted = [string]::Format('{0:C}', $yesterdaySales)
+    if ($null -ne $yesterdaySales) {        
+
+        $salesFormatted = [string]::Format('{0:C}', [double]$yesterdaySales)
         $salesLine = "Yesterday's Sales: $salesFormatted"
+
     }
     else {
         $salesLine = "Yesterday's Sales: (unavailable)"
