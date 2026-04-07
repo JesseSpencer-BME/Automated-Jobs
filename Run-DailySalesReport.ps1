@@ -71,8 +71,10 @@ finally {
 # =============================================================================
 Write-Log "Opening Excel template: $ExcelTemplate"
 
-$excel    = $null
-$workbook = $null
+$excel          = $null
+$workbook       = $null
+$yesterdaySales = $null
+
 try {
     $excel = New-Object -ComObject Excel.Application
     $excel.Visible          = $false
@@ -120,6 +122,10 @@ try {
         Write-Log "Data refresh completed in ~$elapsed seconds."
     }
 
+    # Read yesterday's sales from named range before closing
+    $yesterdaySales = $workbook.Names.Item("dataSalesYesterday").RefersToRange.Value
+    Write-Log "Yesterday's sales: $yesterdaySales"
+
     # 51 = xlOpenXMLWorkbook (.xlsx)
     $workbook.SaveAs($OutputFilePath, 51)
     Write-Log "Saved as: $OutputFilePath"
@@ -163,11 +169,19 @@ try {
         Start-Sleep -Seconds 3
     }
 
+    # Format yesterday's sales as currency, with fallback if value wasn't retrieved
+    if ($null -ne $yesterdaySales) {
+        $salesLine = "Yesterday's Sales: $($yesterdaySales.ToString('C'))"
+    }
+    else {
+        $salesLine = "Yesterday's Sales: (unavailable)"
+    }
+
     $mail = $outlook.CreateItem(0)   # 0 = olMailItem
     $mail.To      = $EmailTo
     $mail.CC      = $EmailToCC
     $mail.Subject = $OutputFileName
-    $mail.Body    = "Please find today's sales pivot report attached.`n`nFile: $OutputFileName`nGenerated: $(Get-Date -Format 'dddd, MMMM d, yyyy')"
+    $mail.Body    = "$salesLine`n`nPlease find today's sales pivot report attached.`n`nFile: $OutputFileName`nGenerated: $(Get-Date -Format 'dddd, MMMM d, yyyy')"
     $mail.Attachments.Add($OutputFilePath) | Out-Null
     $mail.Send()
 
