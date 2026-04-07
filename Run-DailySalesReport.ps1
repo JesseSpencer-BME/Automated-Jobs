@@ -174,7 +174,8 @@ try {
 
     # Format yesterday's sales as currency, with fallback if value wasn't retrieved
     if ($null -ne $yesterdaySales) {
-        $salesLine = "Yesterday's Sales: $([string]::Format('{0:C}', $yesterdaySales))"
+        $salesFormatted = [string]::Format('{0:C}', $yesterdaySales)
+        $salesLine = "Yesterday's Sales: $salesFormatted"
     }
     else {
         $salesLine = "Yesterday's Sales: (unavailable)"
