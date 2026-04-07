@@ -13,8 +13,11 @@ $AccessMacro    = "_mcrSALESONLY"
 $ExcelTemplate  = "C:\Users\JesseSpencer\BenefitsMe, LLC\BenefitsMe - Business Intelligence\KPIs\Sales Reporting\Daily Sales Pivot Reporting\Sales Pivot (Template).xlsx"
 $ExcelOutputDir = Split-Path $ExcelTemplate -Parent
 
-$EmailTo        = "RaechelPeters@BenefitsMe.com; steve.spencer@rfoholdings.com; AndyEdinborough@BenefitsMe.com; dougrippel@rfoholdings.com; AbbyAdams@BenefitsMe.com; DavidCarlock@BenefitsMe.com"
-$EmailToCC      = "kama.crockett@rfoholdings.com; jessespencer@benefitsme.com"
+#$EmailTo        = "RaechelPeters@BenefitsMe.com; steve.spencer@rfoholdings.com; AndyEdinborough@BenefitsMe.com; dougrippel@rfoholdings.com; AbbyAdams@BenefitsMe.com; DavidCarlock@BenefitsMe.com"
+#$EmailToCC      = "kama.crockett@rfoholdings.com; jessespencer@benefitsme.com"
+
+$EmailTo        = "jessespencer@benefitsme.com"
+
 
 # --- Derived values ----------------------------------------------------------
 $DateStamp      = Get-Date -Format "yyyy-MM-dd"
@@ -171,7 +174,7 @@ try {
 
     # Format yesterday's sales as currency, with fallback if value wasn't retrieved
     if ($null -ne $yesterdaySales) {
-        $salesLine = "Yesterday's Sales: $($yesterdaySales.ToString('C'))"
+        $salesLine = "Yesterday's Sales: $([string]::Format('{0:C}', $yesterdaySales))"
     }
     else {
         $salesLine = "Yesterday's Sales: (unavailable)"
